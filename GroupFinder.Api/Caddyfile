@@ -1,0 +1,4 @@
+group-finder.test {
+	reverse_proxy localhost:5146
+	tls internal
+}
