@@ -1,11 +1,10 @@
-﻿using GroupFinder.Application.Auth.ValueObjects;
+﻿using FluentAssertions;
+using GroupFinder.Application.Auth.ValueObjects;
 
 namespace GroupFinder.Tests.Application.Auth.ValueObjects;
 
 public class BattleNetUserInfoTest
 {
-    // TODO: add FluentAssertionsPackage
-    
     [Fact]
     public void CreatesSucceedsWithValidInputs()
     {
@@ -18,6 +17,6 @@ public class BattleNetUserInfoTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Id.Should().Be(id);
         result.Value.BattleTag.Should().Be(tag);
-        result.Value.Region.Should().Be(tag);
+        result.Value.Region.Should().Be(region);
     }
 }
