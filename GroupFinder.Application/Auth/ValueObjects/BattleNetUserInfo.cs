@@ -26,6 +26,9 @@ public sealed class BattleNetUserInfo
         if (string.IsNullOrWhiteSpace(region))
             return Result<BattleNetUserInfo>.Failure("BattleNetUserInfo: region is required.");
         
+        if (region != "eu")
+            return Result<BattleNetUserInfo>.Failure("BattleNetUserInfo: region must be eu.");
+        
         return Result<BattleNetUserInfo>.Success(new BattleNetUserInfo(id, battleTag, region));
     }
 }
