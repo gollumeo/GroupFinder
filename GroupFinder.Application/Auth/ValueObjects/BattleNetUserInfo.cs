@@ -8,7 +8,7 @@ public sealed class BattleNetUserInfo
     public string BattleTag { get; }
     public string Region { get; }
     
-    private static readonly HashSet<string> SupportedRegions = ["eu"];
+    private static readonly HashSet<string> SupportedRegions = [ "eu" ];
 
     private BattleNetUserInfo(string id, string battleTag, string region)
     {
