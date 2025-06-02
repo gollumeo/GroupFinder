@@ -2,7 +2,7 @@
 
 namespace GroupFinder.Application.Auth.Contracts;
 
-public interface IBattleNetOauth
+public interface IBattleNetOAuth
 {
     string GetLoginUrl(string redirectUri, string state);
     Task<BattleNetUserInfo> ExchangeCodeAsync(string code, string redirectUri);
