@@ -1,6 +1,6 @@
 ﻿using GroupFinder.Application.Common;
 
-namespace GroupFinder.Application.Auth.ValueObjects;
+namespace GroupFinder.Infrastructure.Auth.ValueObjects;
 
 public sealed class BattleNetUserInfo
 {
