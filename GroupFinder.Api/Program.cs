@@ -1,3 +1,5 @@
+using GroupFinder.Application.Auth.Contracts;
+using GroupFinder.Infrastructure.Auth;
 using GroupFinder.Infrastructure.Auth.Options;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,6 +13,8 @@ builder.Services.AddOpenApi();
 builder.Services.Configure<BattleNetOAuthOptions>(
     builder.Configuration.GetSection("BattleNetOAuth")
 );
+
+builder.Services.AddScoped<IExternalAuthentication, BattleNetAuthProxy>();
 
 var app = builder.Build();
 
