@@ -1,5 +1,5 @@
 ﻿using FluentAssertions;
-using GroupFinder.Application.Auth.ValueObjects;
+using GroupFinder.Infrastructure.Auth.ValueObjects;
 
 namespace GroupFinder.Tests.Application.Auth.ValueObjects;
 
