@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupFinder.Presentation", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupFinder.Tests", "GroupFinder.Tests\GroupFinder.Tests.csproj", "{02DC3E16-BF13-4509-8EAF-AF597DF824E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GroupFinder.Acherus", "GroupFinder.Acherus\GroupFinder.Acherus.csproj", "{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -111,6 +113,18 @@ Global
 		{02DC3E16-BF13-4509-8EAF-AF597DF824E4}.Release|x64.Build.0 = Release|Any CPU
 		{02DC3E16-BF13-4509-8EAF-AF597DF824E4}.Release|x86.ActiveCfg = Release|Any CPU
 		{02DC3E16-BF13-4509-8EAF-AF597DF824E4}.Release|x86.Build.0 = Release|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Debug|x64.Build.0 = Debug|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Debug|x86.Build.0 = Debug|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Release|x64.ActiveCfg = Release|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Release|x64.Build.0 = Release|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Release|x86.ActiveCfg = Release|Any CPU
+		{ACDF9A56-9AEE-4F5D-ACE1-B5C3A2795471}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
