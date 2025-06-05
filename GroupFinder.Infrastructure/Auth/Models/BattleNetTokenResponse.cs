@@ -1,9 +1,18 @@
-﻿namespace GroupFinder.Infrastructure.Auth.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace GroupFinder.Infrastructure.Auth.Models;
 
 public sealed class BattleNetTokenResponse
 {
-    public string AccessToken { get; set; } = null!;
-    public string TokenType { get; set; } = null!;
-    public int ExpiresIn { get; set; }
-    public string Scope { get; set; } = null!;
+    [JsonPropertyName("access_token")]
+    public string AccessToken { get; init; } = null!;
+    
+    [JsonPropertyName("token_type")]
+    public string TokenType { get; init; } = null!;
+    
+    [JsonPropertyName("expires_in")]
+    public int ExpiresIn { get; init; }
+    
+    [JsonPropertyName("scope")]
+    public string Scope { get; init; } = null!;
 }
