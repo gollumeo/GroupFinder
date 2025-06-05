@@ -16,6 +16,8 @@ builder.Services.Configure<BattleNetOAuthOptions>(
 
 builder.Services.AddScoped<IExternalAuthentication, BattleNetAuthProxy>();
 
+builder.Services.AddHttpClient<BattleNetAuthProxy>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
