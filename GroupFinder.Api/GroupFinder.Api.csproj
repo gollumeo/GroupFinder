@@ -14,6 +14,7 @@
     <ProjectReference Include="..\GroupFinder.Application\GroupFinder.Application.csproj" />
     <ProjectReference Include="..\GroupFinder.Infrastructure\GroupFinder.Infrastructure.csproj" />
     <ProjectReference Include="..\GroupFinder.Presentation\GroupFinder.Presentation.csproj" />
+    <ProjectReference Include="..\GroupFinder.Acherus\GroupFinder.Acherus.csproj" />
   </ItemGroup>
 
 </Project>
