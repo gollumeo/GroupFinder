@@ -10,8 +10,12 @@ public static class Runeforge
     {
         var builder = WebApplication.CreateBuilder(args);
         
+        Console.WriteLine("🪄 Activating runes:");
         foreach (var rune in Frostmourne())
+        {
             rune.Extract(builder.Services, builder.Configuration);
+            Console.WriteLine($" → {rune.GetType().Name}");
+        }
         
         var app = builder.Build();
 
