@@ -11,7 +11,7 @@ public class BattleNetUserInfoTest
         const string id = "bnet-123456";
         const string tag = "Thrall#1234";
         const string region = "eu";
-        
+
         var result = BattleNetUserInfo.Create(id, tag, region);
 
         result.IsSuccess.Should().BeTrue();
@@ -19,7 +19,7 @@ public class BattleNetUserInfoTest
         result.Value.BattleTag.Should().Be(tag);
         result.Value.Region.Should().Be(region);
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("")]
@@ -28,9 +28,9 @@ public class BattleNetUserInfoTest
     {
         const string tag = "Thrall#1234";
         const string region = "eu";
-        
+
         var result = BattleNetUserInfo.Create(invalidId!, tag, region);
-        
+
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("id");
     }
@@ -43,25 +43,26 @@ public class BattleNetUserInfoTest
     {
         const string id = "bnet-123456";
         const string region = "eu";
-        
+
         var result = BattleNetUserInfo.Create(id, invalidTag!, region);
-        
+
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("battleTag");
     }
-    
+
     [Theory]
     [InlineData(null)]
     [InlineData("kr")]
+    [InlineData("na")]
     [InlineData("")]
     [InlineData("     ")]
     public void CreateFailsWithNullOrEmptyRegion(string? invalidRegion)
     {
         const string id = "bnet-123456";
         const string tag = "Thrall#1234";
-        
+
         var result = BattleNetUserInfo.Create(id, tag, invalidRegion!);
-        
+
         result.IsFailure.Should().BeTrue();
         result.Error.Should().Contain("region");
     }
