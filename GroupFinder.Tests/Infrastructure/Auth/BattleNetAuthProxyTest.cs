@@ -1,20 +1,20 @@
-﻿using System;
-using System.Net;
-using System.Net.Http;
+﻿using System.Net;
 using System.Text;
+using System.Web;
+using FluentAssertions;
 using GroupFinder.Infrastructure.Auth;
 using GroupFinder.Infrastructure.Auth.Options;
 using Microsoft.Extensions.Options;
 using Moq;
 using Moq.Protected;
-using Xunit;
-using FluentAssertions;
 
 namespace GroupFinder.Tests.Infrastructure.Auth;
 
 public class BattleNetAuthProxyTests
 {
-    private const string ValidTokenJson = "{ \"access_token\": \"abc123\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"wow.profile\" }";
+    private const string ValidTokenJson =
+        "{ \"access_token\": \"abc123\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"wow.profile\" }";
+
     private const string ValidUserJson = "{ \"id\": \"user123\", \"battletag\": \"TestUser#1234\" }";
 
     private static BattleNetOAuthOptions FakeOptions => new()
@@ -29,7 +29,8 @@ public class BattleNetAuthProxyTests
         ResponseType = "code"
     };
 
-    private static HttpClient CreateMockHttpClient(HttpResponseMessage tokenResponse, HttpResponseMessage userInfoResponse)
+    private static HttpClient CreateMockHttpClient(HttpResponseMessage tokenResponse,
+        HttpResponseMessage userInfoResponse)
     {
         var handler = new Mock<HttpMessageHandler>();
 
@@ -63,6 +64,8 @@ public class BattleNetAuthProxyTests
 
         var client = CreateMockHttpClient(tokenResponse, userInfoResponse);
         var options = Options.Create(FakeOptions);
+
+        // TODO: fix compil & mocks
         var proxy = new BattleNetAuthProxy(client, options);
 
         var result = await proxy.ExchangeCodeAsync("valid_code", FakeOptions.RedirectUri);
@@ -150,7 +153,7 @@ public class BattleNetAuthProxyTests
     public void GetLoginUrl_ComposesUrlWithAllQueryParameters()
     {
         var options = Options.Create(FakeOptions);
-        var client = new HttpClient(); 
+        var client = new HttpClient();
         var proxy = new BattleNetAuthProxy(client, options);
 
         const string redirectUri = "https://myapp.com/callback";
@@ -161,7 +164,7 @@ public class BattleNetAuthProxyTests
         url.Should().StartWith(FakeOptions.AuthorizationUrl);
 
         var uri = new Uri(url);
-        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var query = HttpUtility.ParseQueryString(uri.Query);
 
         query["client_id"].Should().Be(FakeOptions.ClientId);
         query["redirect_uri"].Should().Be(redirectUri);
@@ -174,7 +177,7 @@ public class BattleNetAuthProxyTests
     public void GetLoginUrl_EncodesQueryParameters()
     {
         var options = Options.Create(FakeOptions);
-        var client = new HttpClient(); 
+        var client = new HttpClient();
         var proxy = new BattleNetAuthProxy(client, options);
 
         const string redirectUri = "https://myapp.com/callback?param=value&other=éàè";
@@ -183,7 +186,7 @@ public class BattleNetAuthProxyTests
         var url = proxy.GetLoginUrl(redirectUri, state);
 
         var uri = new Uri(url);
-        var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+        var query = HttpUtility.ParseQueryString(uri.Query);
 
         uri.GetLeftPart(UriPartial.Path).Should().Be("https://fake.auth.com/oauth/authorize");
         query["redirect_uri"].Should().Be(redirectUri);
@@ -194,17 +197,17 @@ public class BattleNetAuthProxyTests
     public void GetLoginUrl_HandlesNullOrEmptyState()
     {
         var options = Options.Create(FakeOptions);
-        var client = new HttpClient(); 
+        var client = new HttpClient();
         var proxy = new BattleNetAuthProxy(client, options);
 
         var urlWithNullState = proxy.GetLoginUrl(FakeOptions.RedirectUri, null!);
         var urlWithEmptyState = proxy.GetLoginUrl(FakeOptions.RedirectUri, "");
 
         var uriNull = new Uri(urlWithNullState);
-        var queryNull = System.Web.HttpUtility.ParseQueryString(uriNull.Query);
+        var queryNull = HttpUtility.ParseQueryString(uriNull.Query);
 
         var uriEmpty = new Uri(urlWithEmptyState);
-        var queryEmpty = System.Web.HttpUtility.ParseQueryString(uriEmpty.Query);
+        var queryEmpty = HttpUtility.ParseQueryString(uriEmpty.Query);
 
         queryNull["client_id"].Should().Be(FakeOptions.ClientId);
         queryNull["state"].Should().BeNullOrEmpty();
