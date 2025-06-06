@@ -34,25 +34,19 @@ public class RecognizeExternalUserTest
         await Task.CompletedTask;
     }
 
-    [Theory]
-    [InlineData("id-123", "Waza#1234", "na")]
-    [InlineData("", "Waza#1234", "eu")]
-    [InlineData("", "", "eu")]
-    [InlineData("", "", "")]
-    public async Task ReturnsEarlyWithInvalidInput(string id, string battleTag, string region)
+    [Fact]
+    public async Task RelaysFailureFromRecognitionGateway()
     {
-        var externalInfo = new ExternalUserInfo(id, battleTag, region);
-        
-        var recognition = new Mock<IExternalUserRecognition>();
-        recognition.Setup(x => x.From(It.IsAny<ExternalUserInfo>()))
-            .ReturnsAsync(Result<RecognizedUser>.Failure("Invalid external user info."));
-        
-        var useCase = new RecognizeExternalUser(recognition.Object);
+        var externalInfo = new ExternalUserInfo("foo", "bar", "eu");
+
+        var gateway = new Mock<IExternalUserRecognition>();
+        gateway.Setup(x => x.From(externalInfo))
+            .ReturnsAsync(Result<RecognizedUser>.Failure("User not found."));
+
+        var useCase = new RecognizeExternalUser(gateway.Object);
         var result = await useCase.Execute(externalInfo);
-        
+
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Contain("Invalid external user info.");
-        
-        recognition.Verify(x => x.From(It.IsAny<ExternalUserInfo>()), Times.Never);
+        result.Error.Should().Be("User not found.");
     }
 }
