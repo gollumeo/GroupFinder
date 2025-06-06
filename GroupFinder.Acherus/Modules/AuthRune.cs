@@ -1,6 +1,7 @@
 ﻿using GroupFinder.Acherus.Contracts;
 using GroupFinder.Application.Auth.Contracts;
 using GroupFinder.Infrastructure.Auth;
+using GroupFinder.Infrastructure.Auth.Contracts;
 using GroupFinder.Infrastructure.Auth.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
@@ -16,7 +17,7 @@ public class AuthRune : IRune
             config.GetSection("BattleNetOAuth")
         );
 
-        services.AddHttpClient<BattleNetAuthProxy>();
+        services.AddHttpClient<IBattleNetApi, BattleNetApiClient>();
         services.AddScoped<IExternalAuthentication, BattleNetAuthProxy>();
     }
 
