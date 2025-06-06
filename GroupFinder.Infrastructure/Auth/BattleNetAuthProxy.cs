@@ -33,6 +33,10 @@ public class BattleNetAuthProxy(
         try
         {
             var token = await api.ExchangeCodeForToken(code, redirectUri);
+
+            if (string.IsNullOrWhiteSpace(token.AccessToken))
+                return Result<ExternalUserInfo>.Failure("Invalid token response: access token is missing.");
+
             var userDto = await api.FetchUserInfo(token.AccessToken);
 
             var battleNetUserInfo = BattleNetUserInfo.Create(userDto.Id, userDto.BattleTag, "eu");
