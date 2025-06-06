@@ -35,7 +35,6 @@ public sealed class BattleNetUserInfo
         if (string.IsNullOrWhiteSpace(region))
             return Result<BattleNetUserInfo>.Failure("BattleNetUserInfo: region is required.");
         
-        // ReSharper disable once ConvertIfStatementToReturnStatement
         if (!SupportedRegions.Contains(region))
             return Result<BattleNetUserInfo>.Failure($"BattleNetUserInfo: region {region} is not supported.");
         
