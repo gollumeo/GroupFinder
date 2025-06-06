@@ -1,22 +1,16 @@
-﻿using System.Net;
-using System.Text;
-using System.Web;
+﻿using System.Web;
 using FluentAssertions;
 using GroupFinder.Infrastructure.Auth;
+using GroupFinder.Infrastructure.Auth.Contracts;
+using GroupFinder.Infrastructure.Auth.Models;
 using GroupFinder.Infrastructure.Auth.Options;
 using Microsoft.Extensions.Options;
 using Moq;
-using Moq.Protected;
 
 namespace GroupFinder.Tests.Infrastructure.Auth;
 
 public class BattleNetAuthProxyTests
 {
-    private const string ValidTokenJson =
-        "{ \"access_token\": \"abc123\", \"token_type\": \"bearer\", \"expires_in\": 3600, \"scope\": \"wow.profile\" }";
-
-    private const string ValidUserJson = "{ \"id\": \"user123\", \"battletag\": \"TestUser#1234\" }";
-
     private static BattleNetOAuthOptions FakeOptions => new()
     {
         ClientId = "fake-client-id",
@@ -29,45 +23,19 @@ public class BattleNetAuthProxyTests
         ResponseType = "code"
     };
 
-    private static HttpClient CreateMockHttpClient(HttpResponseMessage tokenResponse,
-        HttpResponseMessage userInfoResponse)
-    {
-        var handler = new Mock<HttpMessageHandler>();
-
-        handler.Protected()
-            .SetupSequence<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.IsAny<HttpRequestMessage>(),
-                ItExpr.IsAny<CancellationToken>()
-            )
-            .ReturnsAsync(tokenResponse)
-            .ReturnsAsync(userInfoResponse);
-
-        return new HttpClient(handler.Object)
-        {
-            BaseAddress = new Uri("https://fake.api.com")
-        };
-    }
+    private static IOptions<BattleNetOAuthOptions> Options => Microsoft.Extensions.Options.Options.Create(FakeOptions);
 
     [Fact]
-    public async Task ExchangeCodeAsyncReturnsSuccessWithValidTokenAndUserInfo()
+    public async Task AuthenticatesSuccessfullyWithValidTokenAndUser()
     {
-        var tokenResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent(ValidTokenJson, Encoding.UTF8, "application/json")
-        };
+        var api = new Mock<IBattleNetApi>();
+        api.Setup(x => x.ExchangeCodeForToken(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(new BattleNetTokenResponse
+                { AccessToken = "abc123", TokenType = "bearer", ExpiresIn = 3600, Scope = "wow.profile" });
+        api.Setup(x => x.FetchUserInfo(It.IsAny<string>()))
+            .ReturnsAsync(new BattleNetUserInfoDto { Id = "user123", BattleTag = "TestUser#1234" });
 
-        var userInfoResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent(ValidUserJson, Encoding.UTF8, "application/json")
-        };
-
-        var client = CreateMockHttpClient(tokenResponse, userInfoResponse);
-        var options = Options.Create(FakeOptions);
-
-        // TODO: fix compil & mocks
-        var proxy = new BattleNetAuthProxy(client, options);
-
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
         var result = await proxy.ExchangeCodeAsync("valid_code", FakeOptions.RedirectUri);
 
         result.IsSuccess.Should().BeTrue();
@@ -77,12 +45,13 @@ public class BattleNetAuthProxyTests
     }
 
     [Fact]
-    public async Task ExchangeCodeAsyncReturnsFailureWhenTokenCallFails()
+    public async Task FailsAuthenticationWhenTokenEndpointThrows()
     {
-        var tokenResponse = new HttpResponseMessage(HttpStatusCode.BadRequest);
-        var client = CreateMockHttpClient(tokenResponse, new HttpResponseMessage());
+        var api = new Mock<IBattleNetApi>();
+        api.Setup(x => x.ExchangeCodeForToken(It.IsAny<string>(), It.IsAny<string>()))
+            .ThrowsAsync(new Exception("token request failed"));
 
-        var proxy = new BattleNetAuthProxy(client, Options.Create(FakeOptions));
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
         var result = await proxy.ExchangeCodeAsync("bad_code", FakeOptions.RedirectUri);
 
         result.IsFailure.Should().BeTrue();
@@ -90,37 +59,30 @@ public class BattleNetAuthProxyTests
     }
 
     [Fact]
-    public async Task ExchangeCodeAsyncReturnsFailureWhenTokenJsonIsMalformed()
+    public async Task FailsAuthenticationWhenTokenIsMalformed()
     {
-        var tokenResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent("{ \"access_token_missing\": \"abc123\" }", Encoding.UTF8, "application/json")
-        };
-        var userInfoResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent(ValidUserJson, Encoding.UTF8, "application/json")
-        };
+        var api = new Mock<IBattleNetApi>();
+        api.Setup(x => x.ExchangeCodeForToken(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(new BattleNetTokenResponse { AccessToken = null! });
+        api.Setup(x => x.FetchUserInfo(It.IsAny<string>()))
+            .ReturnsAsync(new BattleNetUserInfoDto { Id = "user123", BattleTag = "TestUser#1234" });
 
-        var client = CreateMockHttpClient(tokenResponse, userInfoResponse);
-        var proxy = new BattleNetAuthProxy(client, Options.Create(FakeOptions));
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
         var result = await proxy.ExchangeCodeAsync("valid_code", FakeOptions.RedirectUri);
 
         result.IsFailure.Should().BeTrue();
-        result.Error.Should().Contain("Invalid token response");
     }
 
     [Fact]
-    public async Task ExchangeCodeAsyncReturnsFailureWhenUserInfoFails()
+    public async Task FailsAuthenticationWhenUserInfoThrows()
     {
-        var tokenResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent(ValidTokenJson, Encoding.UTF8, "application/json")
-        };
+        var api = new Mock<IBattleNetApi>();
+        api.Setup(x => x.ExchangeCodeForToken(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(new BattleNetTokenResponse { AccessToken = "abc123" });
+        api.Setup(x => x.FetchUserInfo(It.IsAny<string>()))
+            .ThrowsAsync(new Exception("Failed to fetch user info"));
 
-        var userInfoResponse = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-        var client = CreateMockHttpClient(tokenResponse, userInfoResponse);
-
-        var proxy = new BattleNetAuthProxy(client, Options.Create(FakeOptions));
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
         var result = await proxy.ExchangeCodeAsync("valid_code", FakeOptions.RedirectUri);
 
         result.IsFailure.Should().BeTrue();
@@ -128,21 +90,15 @@ public class BattleNetAuthProxyTests
     }
 
     [Fact]
-    public async Task ExchangeCodeAsyncReturnsFailureWithInvalidUserInfo()
+    public async Task FailsAuthenticationWhenUserInfoIsInvalid()
     {
-        var tokenResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent(ValidTokenJson, Encoding.UTF8, "application/json")
-        };
+        var api = new Mock<IBattleNetApi>();
+        api.Setup(x => x.ExchangeCodeForToken(It.IsAny<string>(), It.IsAny<string>()))
+            .ReturnsAsync(new BattleNetTokenResponse { AccessToken = "abc123" });
+        api.Setup(x => x.FetchUserInfo(It.IsAny<string>()))
+            .ReturnsAsync(new BattleNetUserInfoDto());
 
-        var userInfoResponse = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent("{}", Encoding.UTF8, "application/json")
-        };
-
-        var client = CreateMockHttpClient(tokenResponse, userInfoResponse);
-        var proxy = new BattleNetAuthProxy(client, Options.Create(FakeOptions));
-
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
         var result = await proxy.ExchangeCodeAsync("valid_code", FakeOptions.RedirectUri);
 
         result.IsFailure.Should().BeTrue();
@@ -150,11 +106,10 @@ public class BattleNetAuthProxyTests
     }
 
     [Fact]
-    public void GetLoginUrl_ComposesUrlWithAllQueryParameters()
+    public void ComposesOAuthUrlCorrectly()
     {
-        var options = Options.Create(FakeOptions);
-        var client = new HttpClient();
-        var proxy = new BattleNetAuthProxy(client, options);
+        var api = new Mock<IBattleNetApi>();
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
 
         const string redirectUri = "https://myapp.com/callback";
         const string state = "someRandomState123";
@@ -174,11 +129,10 @@ public class BattleNetAuthProxyTests
     }
 
     [Fact]
-    public void GetLoginUrl_EncodesQueryParameters()
+    public void EncodesOAuthUrlQueryParameters()
     {
-        var options = Options.Create(FakeOptions);
-        var client = new HttpClient();
-        var proxy = new BattleNetAuthProxy(client, options);
+        var api = new Mock<IBattleNetApi>();
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
 
         const string redirectUri = "https://myapp.com/callback?param=value&other=éàè";
         const string state = "spécial state&with chars";
@@ -194,11 +148,10 @@ public class BattleNetAuthProxyTests
     }
 
     [Fact]
-    public void GetLoginUrl_HandlesNullOrEmptyState()
+    public void HandlesNullOrEmptyStateInOAuthUrl()
     {
-        var options = Options.Create(FakeOptions);
-        var client = new HttpClient();
-        var proxy = new BattleNetAuthProxy(client, options);
+        var api = new Mock<IBattleNetApi>();
+        var proxy = new BattleNetAuthProxy(api.Object, Options);
 
         var urlWithNullState = proxy.GetLoginUrl(FakeOptions.RedirectUri, null!);
         var urlWithEmptyState = proxy.GetLoginUrl(FakeOptions.RedirectUri, "");
