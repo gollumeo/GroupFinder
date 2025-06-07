@@ -14,12 +14,13 @@ public class RecognizeExternalUserTest
     public async Task ReturnsRecognizedExternalUser()
     {
         var externalInfo = new ExternalUserInfo("ext-123", "DarkDk#0666", "eu");
-        
+
         var fakeUserId = Guid.NewGuid();
 
         var gateway = new Mock<IExternalUserRecognition>();
         gateway.Setup(x => x.From(externalInfo))
-            .ReturnsAsync(Result<RecognizedUser>.Success(new RecognizedUser(fakeUserId)));
+            .ReturnsAsync(Result<RecognizedUser>.Success(new RecognizedUser(fakeUserId, externalInfo.BattleTag,
+                externalInfo.Region)));
 
         var useCase = new RecognizeExternalUser(gateway.Object);
         var result = await useCase.Execute(externalInfo);
@@ -27,7 +28,7 @@ public class RecognizeExternalUserTest
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(fakeUserId);
     }
-    
+
     [Fact]
     public async Task ReturnsFailureWhenExternalUserNotFound()
     {
