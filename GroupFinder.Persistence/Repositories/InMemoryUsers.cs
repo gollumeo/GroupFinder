@@ -16,4 +16,9 @@ public class InMemoryUsers : IUserRepository
 
         return Task.FromResult(Result<RecognizedUser>.Success(user));
     }
+
+    public Task Add(RecognizedUser user)
+    {
+        throw new NotImplementedException();
+    }
 }
