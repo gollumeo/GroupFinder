@@ -1,5 +1,5 @@
-﻿using GroupFinder.Application.Auth.DTO;
-using GroupFinder.Application.Common;
+﻿using Application;
+using GroupFinder.Application.Auth.DTO;
 
 namespace GroupFinder.Application.Auth.Contracts;
 

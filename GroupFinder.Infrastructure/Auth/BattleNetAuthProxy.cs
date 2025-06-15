@@ -1,7 +1,7 @@
 ﻿using System.Web;
+using Application;
 using GroupFinder.Application.Auth.Contracts;
 using GroupFinder.Application.Auth.ValueObjects;
-using GroupFinder.Application.Common;
 using GroupFinder.Infrastructure.Auth.Contracts;
 using GroupFinder.Infrastructure.Auth.Options;
 using GroupFinder.Infrastructure.Auth.ValueObjects;

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Concurrent;
+using Application;
 using GroupFinder.Application.Auth.Contracts;
 using GroupFinder.Application.Auth.DTO;
-using GroupFinder.Application.Common;
 
 namespace GroupFinder.Persistence.Repositories;
 

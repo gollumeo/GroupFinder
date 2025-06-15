@@ -1,5 +1,5 @@
-﻿using GroupFinder.Application.Auth.ValueObjects;
-using GroupFinder.Application.Common;
+﻿using Application;
+using GroupFinder.Application.Auth.ValueObjects;
 
 namespace GroupFinder.Application.Auth.Contracts;
 

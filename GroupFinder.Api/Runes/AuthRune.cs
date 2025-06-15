@@ -1,11 +1,11 @@
-﻿using GroupFinder.Acherus.Contracts;
-using GroupFinder.Application.Auth.Contracts;
+﻿using GroupFinder.Application.Auth.Contracts;
 using GroupFinder.Infrastructure.Auth;
 using GroupFinder.Infrastructure.Auth.Contracts;
 using GroupFinder.Infrastructure.Auth.Options;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Rituals.Contracts;
 
 namespace GroupFinder.Acherus.Modules;
 

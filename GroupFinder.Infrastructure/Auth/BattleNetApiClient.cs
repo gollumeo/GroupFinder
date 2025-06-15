@@ -1,8 +1,5 @@
 ﻿using System.Net.Http.Headers;
 using System.Text.Json;
-using GroupFinder.Application.Auth.Contracts;
-using GroupFinder.Application.Auth.ValueObjects;
-using GroupFinder.Application.Common;
 using GroupFinder.Infrastructure.Auth.Contracts;
 using GroupFinder.Infrastructure.Auth.Models;
 using GroupFinder.Infrastructure.Auth.Options;
@@ -13,7 +10,7 @@ namespace GroupFinder.Infrastructure.Auth;
 public class BattleNetApiClient(HttpClient httpClient, IOptions<BattleNetOAuthOptions> options) : IBattleNetApi
 {
     private readonly BattleNetOAuthOptions _options = options.Value;
-    
+
     public async Task<BattleNetTokenResponse> ExchangeCodeForToken(string code, string redirectUri)
     {
         var tokenRequest = new Dictionary<string, string>

@@ -1,6 +1,6 @@
-using GroupFinder.Acherus;
+using GroupFinder.Api;
 
-await Runeforge.Inscribe(args);
+await new Runeforge().Inscribe(args);
 
 public static partial class Program
 {

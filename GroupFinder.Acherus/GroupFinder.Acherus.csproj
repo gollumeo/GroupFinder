@@ -7,16 +7,21 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <FrameworkReference Include="Microsoft.AspNetCore.App" />
+        <FrameworkReference Include="Microsoft.AspNetCore.App"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\GroupFinder.Application\GroupFinder.Application.csproj" />
-        <ProjectReference Include="..\GroupFinder.Infrastructure\GroupFinder.Infrastructure.csproj" />
+        <ProjectReference Include="..\GroupFinder.Application\GroupFinder.Application.csproj"/>
+        <ProjectReference Include="..\GroupFinder.Infrastructure\GroupFinder.Infrastructure.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4" />
+        <PackageReference Include="Gollumeo.Acherus.Rituals" Version="1.0.5"/>
+        <PackageReference Include="Swashbuckle.AspNetCore" Version="8.1.4"/>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Modules\" />
     </ItemGroup>
 
 </Project>

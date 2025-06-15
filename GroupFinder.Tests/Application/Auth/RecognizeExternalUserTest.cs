@@ -1,9 +1,9 @@
-﻿using FluentAssertions;
+﻿using Application;
+using FluentAssertions;
 using GroupFinder.Application.Auth;
 using GroupFinder.Application.Auth.Contracts;
 using GroupFinder.Application.Auth.DTO;
 using GroupFinder.Application.Auth.ValueObjects;
-using GroupFinder.Application.Common;
 using Moq;
 
 namespace GroupFinder.Tests.Application.Auth;
